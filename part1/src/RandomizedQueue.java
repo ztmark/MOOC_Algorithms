@@ -11,6 +11,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private Item[] items;
     private int size;
     private int capacity = 16;
+    private int shuffleNum;
 
     // construct an empty randomized queue
     @SuppressWarnings("unchecked")
@@ -53,7 +54,19 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (size == 0) {
             throw new NoSuchElementException();
         }
-        Item ans = randomDequeue();
+        /*Item ans = randomDequeue();
+        if (size <= capacity / 4) {
+            ensureCapacity(capacity / 2);
+            capacity /= 2;
+        }
+        return ans;*/
+        if (shuffleNum == 0) {
+            shuffleNum = size;
+            StdRandom.shuffle(items, 0, size - 1);
+        }
+        shuffleNum--;
+        Item ans = items[--size];
+        items[size] = null;
         if (size <= capacity / 4) {
             ensureCapacity(capacity / 2);
             capacity /= 2;
