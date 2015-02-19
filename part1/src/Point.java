@@ -42,14 +42,15 @@ public class Point implements Comparable<Point> {
     // slope between this point and that point
     public double slopeTo(Point that) {
         /* YOUR CODE HERE */
+        if (that == null) {
+            throw new NullPointerException();
+        }
         int diffX = that.x - this.x;
         int diffY = that.y - this.y;
-        if (diffX == 0) {
-            if (diffY > 0) {
-                return Double.POSITIVE_INFINITY;
-            } else {
-                return Double.NEGATIVE_INFINITY;
-            }
+        if (diffX == 0 && diffY == 0) {
+            return Double.NEGATIVE_INFINITY;
+        } else if (diffX == 0) {
+            return Double.POSITIVE_INFINITY;
         } else if (diffY == 0) {
             return 0;
         } else {
@@ -61,6 +62,9 @@ public class Point implements Comparable<Point> {
     // comparing y-coordinates and breaking ties by x-coordinates
     public int compareTo(Point that) {
         /* YOUR CODE HERE */
+        if (that == null) {
+            throw new NullPointerException();
+        }
         if (this.y < that.y) {
             return -1;
         } else if (this.y > that.y) {
@@ -94,28 +98,8 @@ public class Point implements Comparable<Point> {
     // unit test
     public static void main(String[] args) {
         /* YOUR CODE HERE */
-        /*Point p1 = new Point(5, 6);
-        Point p2 = new Point(5, 8);
-        Point p3 = new Point(6, 9);
-        Point p4 = new Point(12, 9);
-        System.out.println(p1.slopeTo(p2));
-        System.out.println(p1.slopeTo(p3));
-        System.out.println(p1.slopeTo(p4));
-        System.out.println(p2.slopeTo(p1));
-        System.out.println(p2.slopeTo(p3));
-        System.out.println(p2.slopeTo(p4));
-        System.out.println(p3.slopeTo(p4));
-        System.out.println(p4.slopeTo(p3));*/
-        double d1 = Double.NEGATIVE_INFINITY;
-        double d2 = Double.POSITIVE_INFINITY;
-        double d3 = 5.6;
-        double d4 = 5.59;
-        System.out.println(d1 > d2);
-        System.out.println(d1 == Double.NEGATIVE_INFINITY);
-        System.out.println(d1 > d3);
-        System.out.println(d1 > d4);
-        System.out.println(d2 > d3);
-        System.out.println(d2 > d4);
-        System.out.println(d3 > d4);
+        Point p = new Point(214, 207);
+        Point q = new Point(214, 21);
+        System.out.println(p.slopeTo(q));
     }
 }
