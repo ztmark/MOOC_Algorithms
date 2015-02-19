@@ -26,17 +26,12 @@ public class Fast {
                 set.add(tmp.toString());
             }
         }
-        HashMap<Point, Point> map = new HashMap<>();
+        HashMap<Double, Point> map = new HashMap<>();
 
 
         for (int i = 0; i < n; i++) {
             Point p = points[i];
-            /*if (!set.contains(p.toString())) {
-                p.draw();
-                set.add(p.toString());
-            } else {
-                continue;
-            }*/
+
             Point[] otherPoint = new Point[n - 1 - i];
             System.arraycopy(points, i+1, otherPoint, 0, n - i - 1);
             Arrays.sort(otherPoint, p.SLOPE_ORDER);
@@ -53,7 +48,7 @@ public class Fast {
         }
     }
 
-    private static void draw(Point[] points, Point p, int lo, int hi, HashMap<Point, Point> map) {
+    private static void draw(Point[] points, Point p, int lo, int hi, HashMap<Double, Point> map) {
 
 
         Point[] line = new Point[hi - lo + 1];
@@ -62,7 +57,8 @@ public class Fast {
             line[j] = points[i];
         }
         Arrays.sort(line);
-        if (map.get(line[0]) != null && map.get(line[0]).toString().equals(line[hi - lo].toString())) {
+        Double slope = line[0].slopeTo(line[hi - lo]);
+        if (map.get(slope) != null && map.get(slope).toString().equals(line[hi - lo].toString())) {
             return;
         }
         line[0].drawTo(line[hi - lo]);
@@ -73,6 +69,6 @@ public class Fast {
             line[i-1].drawTo(line[i]);
         }
         System.out.println();
-        map.put(line[0], line[hi - lo]);
+        map.put(slope, line[hi - lo]);
     }
 }
