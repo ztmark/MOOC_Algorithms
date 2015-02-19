@@ -13,11 +13,18 @@ public class Brute {
         In in = new In(args[0]);
         int n = in.readInt();
         Point[] points = new Point[n];
-        for (int i = 0; i < n; i++) {
-            points[i] = new Point(in.readInt(), in.readInt());
-        }
-//        HashMap<Point, Point> map = new HashMap<>();
+        StdDraw.setXscale(0, 32768);
+        StdDraw.setYscale(0, 32768);
         HashSet<String> set = new HashSet<>(n);
+        for (int i = 0; i < n; i++) {
+            Point tmp = new Point(in.readInt(), in.readInt());
+            points[i] = tmp;
+            if (!set.contains(tmp.toString())) {
+                tmp.draw();
+                set.add(tmp.toString());
+            }
+        }
+
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
                 for (int k = j + 1; k < n; k++) {
@@ -26,8 +33,7 @@ public class Brute {
                         Point q = points[j];
                         Point r = points[k];
                         Point s = points[l];
-                        StdDraw.setXscale(0, 32768);
-                        StdDraw.setYscale(0, 32768);
+                       /*
                         if (!set.contains(p.toString())) {
                             p.draw();
                             set.add(p.toString());
@@ -44,7 +50,7 @@ public class Brute {
                             s.draw();
                             set.add(s.toString());
                         }
-
+*/
 
                         if (p.SLOPE_ORDER.compare(q, r) == 0
                                 && p.SLOPE_ORDER.compare(r, s) == 0) {
@@ -54,11 +60,6 @@ public class Brute {
                             four[2] = r;
                             four[3] = s;
                             Arrays.sort(four);
-                            /*if (map.get(four[0]) != null && map.get(four[0]).toString().equals(four[3].toString())) {
-                                continue;
-                            }
-                            map.put(four[0], four[3]);*/
-
 
                             four[0].drawTo(four[3]);
                             System.out.print(four[0]);

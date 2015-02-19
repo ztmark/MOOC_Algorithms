@@ -15,21 +15,28 @@ public class Fast {
         In in = new In(args[0]);
         int n = in.readInt();
         Point[] points = new Point[n];
-        for (int i = 0; i < n; i++) {
-            points[i] = new Point(in.readInt(), in.readInt());
-        }
-        HashMap<Point, Point> map = new HashMap<>();
-        HashSet<String> set = new HashSet<>(n);
         StdDraw.setXscale(0, 32768);
         StdDraw.setYscale(0, 32768);
+        HashSet<String> set = new HashSet<>(n);
+        for (int i = 0; i < n; i++) {
+            Point tmp = new Point(in.readInt(), in.readInt());
+            points[i] = tmp;
+            if (!set.contains(tmp.toString())) {
+                tmp.draw();
+                set.add(tmp.toString());
+            }
+        }
+        HashMap<Point, Point> map = new HashMap<>();
+
+
         for (int i = 0; i < n; i++) {
             Point p = points[i];
-            if (!set.contains(p.toString())) {
+            /*if (!set.contains(p.toString())) {
                 p.draw();
                 set.add(p.toString());
             } else {
                 continue;
-            }
+            }*/
             Point[] otherPoint = new Point[n - 1 - i];
             System.arraycopy(points, i+1, otherPoint, 0, n - i - 1);
             Arrays.sort(otherPoint, p.SLOPE_ORDER);
