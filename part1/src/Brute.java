@@ -33,24 +33,6 @@ public class Brute {
                         Point q = points[j];
                         Point r = points[k];
                         Point s = points[l];
-                       /*
-                        if (!set.contains(p.toString())) {
-                            p.draw();
-                            set.add(p.toString());
-                        }
-                        if (!set.contains(q.toString())) {
-                            q.draw();
-                            set.add(q.toString());
-                        }
-                        if (!set.contains(r.toString())) {
-                            r.draw();
-                            set.add(r.toString());
-                        }
-                        if (!set.contains(s.toString())) {
-                            s.draw();
-                            set.add(s.toString());
-                        }
-*/
 
                         if (p.SLOPE_ORDER.compare(q, r) == 0
                                 && p.SLOPE_ORDER.compare(r, s) == 0) {

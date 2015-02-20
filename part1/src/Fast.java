@@ -6,6 +6,7 @@ import java.util.HashSet;
  * Author: Mark
  * Date  : 2015/2/19
  * Time  : 15:40
+ *
  */
 public class Fast {
 
@@ -26,8 +27,8 @@ public class Fast {
                 set.add(tmp.toString());
             }
         }
-        HashMap<Double, Point> map = new HashMap<>();
-
+        HashMap<Double, HashSet<String>> map = new HashMap<>(); // 斜率 --> 相同斜率的线段的最后一个点
+        Arrays.sort(points);  // 对点进行排序，重要！
 
         for (int i = 0; i < n; i++) {
             Point p = points[i];
@@ -41,16 +42,14 @@ public class Fast {
                     high++;
                 }
                 if (high - low > 2) {
-                    draw(otherPoint, p, low, high, map);
+                    myDraw(otherPoint, p, low, high, map);
                 }
                 low = high;
             }
         }
     }
 
-    private static void draw(Point[] points, Point p, int lo, int hi, HashMap<Double, Point> map) {
-
-
+    private static void myDraw(Point[] points, Point p, int lo, int hi, HashMap<Double,HashSet<String>> map) {
         Point[] line = new Point[hi - lo + 1];
         line[0] = p;
         for (int i = lo, j = 1; i < hi; i++, j++) {
@@ -58,7 +57,7 @@ public class Fast {
         }
         Arrays.sort(line);
         Double slope = line[0].slopeTo(line[hi - lo]);
-        if (map.get(slope) != null && map.get(slope).toString().equals(line[hi - lo].toString())) {
+        if (map.get(slope) != null && map.get(slope).contains(line[hi - lo].toString())) {
             return;
         }
         line[0].drawTo(line[hi - lo]);
@@ -66,9 +65,13 @@ public class Fast {
         for (int i = 1; i < line.length; i++) {
             System.out.print(" -> ");
             System.out.print(line[i]);
-            line[i-1].drawTo(line[i]);
         }
         System.out.println();
-        map.put(slope, line[hi - lo]);
+        HashSet<String> set = map.get(slope);
+        if (set == null) {
+            set = new HashSet<>();
+        }
+        set.add(line[hi - lo].toString());
+        map.put(slope, set);
     }
 }
