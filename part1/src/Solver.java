@@ -28,8 +28,12 @@ public class Solver {
 //                initMoves++;
                 initMoves = initTmp.moves + 1;
                 for (Board b : it) {
-                    if (!b.equals(initTmp.board)) {
+                    if (initTmp.pre == null) {
                         pqInit.insert(new SearchNode(b, initTmp, initMoves));
+                    } else {
+                        if (!b.equals(initTmp.pre.board)) {
+                            pqInit.insert(new SearchNode(b, initTmp, initMoves));
+                        }
                     }
                 }
             }
@@ -42,8 +46,12 @@ public class Solver {
 //                twinMoves++;
                 twinMoves = twinTmp.moves + 1;
                 for (Board b : it) {
-                    if (!b.equals(twinTmp.board)) {
+                    if (twinTmp.pre == null) {
                         pqTwin.insert(new SearchNode(b, twinTmp, twinMoves));
+                    } else {
+                        if (!b.equals(twinTmp.pre.board)) {
+                            pqTwin.insert(new SearchNode(b, twinTmp, twinMoves));
+                        }
                     }
                 }
             }
