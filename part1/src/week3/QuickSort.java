@@ -27,6 +27,7 @@ public class QuickSort<Item extends Comparable<? super Item>> {
         System.out.println();
     }
 
+    // 0 <= low <= high < items.length
     public void sort(Item[] items, int low, int high) {
         if (outOfRange(items, low, high)) {
             throw new IllegalArgumentException();

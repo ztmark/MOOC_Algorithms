@@ -16,7 +16,9 @@ public class Selection<Item extends Comparable<? super Item>> {
             items[i] = random.nextInt(100);
         }
         printArray(items);
-        System.out.println(new Selection<Integer>().selectKth(items, 3));
+        System.out.println(new Selection<Integer>().selectKth(items, 9));
+        new QuickSort<Integer>().sort(items, 0, items.length - 1);
+        printArray(items);
     }
 
     private static void printArray(Comparable[] items) {
@@ -31,49 +33,54 @@ public class Selection<Item extends Comparable<? super Item>> {
         return selectKth(items, 0, items.length - 1, k);
     }
 
-    @SuppressWarnings("unchecked")
-    public Item selectKth(Item[] items, int low, int high, int k) {
-        Item[] tmp = (Item[]) new Comparable[high - low + 1];
-        System.arraycopy(items, low, tmp, 0, high - low + 1);
-        int mid = partition(tmp, 0, high - low + 1);
-        if (k == mid) return tmp[mid];
-        else if (k < mid) {
-            return selectKth(tmp, 0, mid - 1, k);
-        } else {
-            return selectKth(tmp, mid + 1, high, k - mid);
+    private Item selectKth(Item[] items, int s, int e, int k) {
+        if (s < 0 || e >= items.length || k < 0 || k > (e - s + 1)) {
+            throw new IllegalArgumentException();
         }
+        int lo = s, hi = e;
+        while (hi > lo) { // 个数大于1的时候
+            int p = partition(items, lo, hi);
+            if (p > k) {
+                hi = p - 1;
+            } else if (p < k) {
+                lo = p + 1;
+            } else {
+                return items[k];
+            }
+        }
+        return items[k]; // 个数只有一个时，那这个就是
     }
 
-    private int partition(Item[] items, int low, int high) {
-        selectPivot(items, low, high);
-        Item pivot = items[low];
-        int i = low, j = high + 1;
+    private int partition(Item[] items, int s, int e) {
+        int pivot = median3(items, s, e);
+        swap(items, s, pivot);
+        int i = s, j = e + 1;
         while (true) {
-            while (pivot.compareTo(items[++i]) > 0) {
-                if (i == high) break;
+            while (items[s].compareTo(items[++i]) > 0) {
+                if (i >= j) break;
             }
-            while (pivot.compareTo(items[--j]) < 0) {
-                if (j == low) break;
+            while (items[s].compareTo(items[--j]) < 0) {
+                if (i >= j) break;
             }
             if (i >= j) break;
             swap(items, i, j);
         }
-        swap(items, low, j);
+        swap(items, s, j);
         return j;
     }
 
-    // 将最低位 mid 最高位 三个位置的元素的中值放置到第一个位置
-    private void selectPivot(Item[] items, int low, int high) {
-        int mid = low + (high - low) / 2;
-        if (items[low].compareTo(items[mid]) > 0) {
-            swap(items, low, mid);
+    private int median3(Item[] items, int s, int e) {
+        int mid = s + (e - s) / 2;
+        if (items[s].compareTo(items[mid]) > 0) {
+            swap(items, s, mid);
         }
-        if (items[mid].compareTo(items[high]) > 0) {
-            swap(items, mid, high);
+        if (items[mid].compareTo(items[e]) > 0) {
+            swap(items, mid, e);
         }
-        if (items[low].compareTo(items[mid]) < 0) {
-            swap(items, low, mid);
+        if (items[s].compareTo(items[mid]) > 0) {
+            swap(items, s, mid);
         }
+        return mid;
     }
 
     private void swap(Item[] items, int i, int j) {
@@ -81,5 +88,6 @@ public class Selection<Item extends Comparable<? super Item>> {
         items[i] = items[j];
         items[j] = tmp;
     }
+
 
 }
