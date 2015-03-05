@@ -25,7 +25,8 @@ public class Solver {
                 break;
             } else {
                 Iterable<Board> it = initTmp.board.neighbors();
-                initMoves++;
+//                initMoves++;
+                initMoves = initTmp.moves + 1;
                 for (Board b : it) {
                     if (!b.equals(initTmp.board)) {
                         pqInit.insert(new SearchNode(b, initTmp, initMoves));
@@ -38,7 +39,8 @@ public class Solver {
                 break;
             } else {
                 Iterable<Board> it = twinTmp.board.neighbors();
-                twinMoves++;
+//                twinMoves++;
+                twinMoves = twinTmp.moves + 1;
                 for (Board b : it) {
                     if (!b.equals(twinTmp.board)) {
                         pqTwin.insert(new SearchNode(b, twinTmp, twinMoves));
@@ -81,6 +83,9 @@ public class Solver {
         @Override
         public int compare(SearchNode o1, SearchNode o2) {
             if (o1.equals(o2)) return 0;
+            if (o1.board.manhattan() + o1.moves == o2.board.manhattan() + o2.moves) {
+                return o1.moves < o2.moves ? -1 : 1;
+            }
             return o1.board.manhattan() + o1.moves < o2.board.manhattan() + o2.moves ? -1 : 1;
         }
     }
