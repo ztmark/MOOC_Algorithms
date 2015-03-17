@@ -84,7 +84,7 @@ public class PointSET {
         @Override
         public int compare(Point2D o1, Point2D o2) {
             if (o1 == o2) return 0;
-            double delta = 1e-7;
+            double delta = 1e-11;
             double y = Math.abs(o1.y() - o2.y());
             double x = Math.abs(o1.x() - o2.x());
             if (y < delta && x < delta) return 0;
