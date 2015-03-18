@@ -1,4 +1,3 @@
-
 /**
  * Author: Mark
  * Date  : 2015/3/16
@@ -28,115 +27,125 @@ public class KdTree {
     // add the point to the set (if it is not already in the set)
     public void insert(Point2D p) {
         if (p == null) throw new NullPointerException();
-        if (contains(p)) return;
-        root = insert(null, root, p, 0);
-        size++;
+        root = insert(null, root, p, true, true);
     }
 
-    private Node insert(Node pre, Node root, Point2D p, int level) {
-        if (root == null) {
-            Node n = new Node(p, null, null, level);
+    /**
+     *
+     * @param pre 父节点
+     * @param cur 当前节点
+     * @param p 待插入点
+     * @param isEvenLevel 当前节点所在层是否是偶数层
+     * @param isLeft 当前节点是否是父节点的左孩子
+     * @return 当前节点
+     */
+    private Node insert(Node pre, Node cur, Point2D p, boolean isEvenLevel, boolean isLeft) {
+        if (cur == null) {
+            size++;
+            Node node = new Node(p, null, null);
             if (pre == null) {
-                n.rect = new RectHV(0.0, 0.0, 1.0, 1.0);
+                node.rect = new RectHV(0.0, 0.0, 1.0, 1.0);
             } else {
-                if ((level-1) % 2 == 0) {
-                    double prex = pre.p.x();
-                    if (p.x() < prex) {
-                        n.rect = new RectHV(pre.rect.xmin(), pre.rect.ymin(), prex, pre.rect.ymax());
+                if (isEvenLevel) {
+                    if (isLeft) {
+                        node.rect = new RectHV(pre.rect.xmin(), pre.rect.ymin(), pre.rect.xmax(), pre.p.y());
                     } else {
-                        n.rect = new RectHV(prex, pre.rect.ymin(), pre.rect.xmax(), pre.rect.ymax());
+                        node.rect = new RectHV(pre.rect.xmin(), pre.p.y(), pre.rect.xmax(), pre.rect.ymax());
                     }
                 } else {
-                    double prey = pre.p.y();
-                    if (p.y() < prey) {
-                        n.rect = new RectHV(pre.rect.xmin(), pre.rect.ymin(), pre.rect.xmax(), prey);
+                    if (isLeft) {
+                        node.rect = new RectHV(pre.rect.xmin(), pre.rect.ymin(), pre.p.x(), pre.rect.ymax());
                     } else {
-                        n.rect = new RectHV(pre.rect.xmin(), prey, pre.rect.xmax(), pre.rect.ymax());
+                        node.rect = new RectHV(pre.p.x(), pre.rect.ymin(), pre.rect.xmax(), pre.rect.ymax());
                     }
                 }
             }
-            return n;
+            return node;
         }
-        if (level % 2 == 0) {
-            //第偶数层 root为第0层
-            if (p.x() < root.p.x()) {
-                root.lb = insert(root, root.lb, p, ++level);
+        if (isEqual(cur.p, p)) return cur;
+        if (isEvenLevel) {
+            if (p.x() < cur.p.x()) {
+                cur.lb = insert(cur, cur.lb, p, false, true);
             } else {
-                root.rt = insert(root, root.rt, p, ++level);
+                cur.rt = insert(cur, cur.rt, p, false, false);
             }
         } else {
-            //第奇数层
-            if (p.y() < root.p.y()) {
-                root.lb = insert(root, root.lb, p, ++level);
+            if (p.y() < cur.p.y()) {
+                cur.lb = insert(cur, cur.lb, p, true, true);
             } else {
-                root.rt = insert(root, root.rt, p, ++level);
+                cur.rt = insert(cur, cur.rt, p, true, false);
             }
         }
-        return root;
+        return cur;
     }
+
 
     // does the set contain point p?
     public boolean contains(Point2D p) {
         if (p == null) throw new NullPointerException();
-        return contains(root, p, 0);
+        return contains(root, p, true);
     }
 
-    private boolean contains(Node root, Point2D p, int level) {
-        if (root == null) {
-            return false;
-        }
-//        double delta = 1e-11;
-//        double y = Math.abs(root.p.y() - p.y());
-//        double x = Math.abs(root.p.x() - p.x());
-//        if (y < delta && x < delta) return true;
-        if (isEqual(root.p, p)) return true;
-        level++;
-        if (level % 2 == 0) {
-            if (root.p.y() > p.y()) {
-                return contains(root.lb, p, level);
+    /**
+     *
+     * @param cur 当前节点
+     * @param p 待查找点
+     * @param isEvenLevel 当前节点所在的层是否是偶数层
+     * @return boolean 是否存在
+     */
+    private boolean contains(Node cur, Point2D p, boolean isEvenLevel) {
+        if (cur == null) return false;
+        if (isEqual(p, cur.p)) return true;
+        if (isEvenLevel) {
+            if (p.x() < cur.p.x()) {
+                return contains(cur.lb, p, false);
             } else {
-                return contains(root.rt, p, level);
+                return contains(cur.rt, p, false);
             }
         } else {
-            if (root.p.x() > p.x()) {
-                return contains(root.lb, p, level);
+            if (p.y() < cur.p.y()) {
+                return contains(cur.lb, p, true);
             } else {
-                return contains(root.rt, p, level);
+                return contains(cur.rt, p, true);
             }
         }
     }
 
     private boolean isEqual(Point2D p, Point2D q) {
-        double delta = 1e-11;
-        double y = Math.abs(p.y() - q.y());
         double x = Math.abs(p.x() - q.x());
-        return y < delta && x < delta;
+        double y = Math.abs(p.y() - q.y());
+        double delta = 10e-11;
+        return x < delta && y < delta;
     }
 
     // draw all points to standard draw
     public void draw() {
         if (root == null) return;
-        Queue<Node> q = new Queue<>();
-        q.enqueue(root);
-        while (!q.isEmpty()) {
-            Node n = q.dequeue();
-            if (n.lb != null) {
-                q.enqueue(n.lb);
-            }
-            if (n.rt != null) {
-                q.enqueue(n.rt);
-            }
-            StdDraw.setPenColor(StdDraw.BLACK);
-            StdDraw.setPenRadius(0.01);
-            n.p.draw();
-            StdDraw.setPenRadius();
-            if (n.level % 2 == 0) {
-                StdDraw.setPenColor(StdDraw.RED);
-                new Point2D(n.p.x(), n.rect.ymin()).drawTo(new Point2D(n.p.x(), n.rect.ymax()));
-            } else {
-                StdDraw.setPenColor(StdDraw.BLUE);
-                new Point2D(n.rect.xmin(), n.p.y()).drawTo(new Point2D(n.rect.xmax(), n.p.y()));
-            }
+        draw(root, true);
+    }
+
+    private void draw(Node cur, boolean isEvenLevel) {
+        if (cur == null) return;
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.setPenRadius(0.01);
+        cur.p.draw();
+        StdDraw.setPenRadius();
+        if (isEvenLevel) {
+            StdDraw.setPenColor(StdDraw.RED);
+            double x = cur.p.x();
+            Point2D p = new Point2D(x, cur.rect.ymin());
+            Point2D q = new Point2D(x, cur.rect.ymax());
+            p.drawTo(q);
+            draw(cur.lb, false);
+            draw(cur.rt, false);
+        } else {
+            StdDraw.setPenColor(StdDraw.BLUE);
+            double y = cur.p.y();
+            Point2D p = new Point2D(cur.rect.xmin(), y);
+            Point2D q = new Point2D(cur.rect.xmax(), y);
+            p.drawTo(q);
+            draw(cur.lb, true);
+            draw(cur.rt, true);
         }
     }
 
@@ -144,140 +153,123 @@ public class KdTree {
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null) throw new NullPointerException();
         Queue<Point2D> queue = new Queue<>();
-        Stack<Node> stack = new Stack<>();
-        if (root != null) {
-            stack.push(root);
+        return range(root, rect, queue);
+    }
+
+    /*
+    Range search. To find all points contained in a given query rectangle,
+    start at the root and recursively search for points in both subtrees using the following pruning rule:
+    if the query rectangle does not intersect the rectangle corresponding to a node,
+    there is no need to explore that node (or its subtrees).
+    A subtree is searched only if it might contain a point contained in the query rectangle.
+     */
+    private Iterable<Point2D> range(Node cur, RectHV rect, Queue<Point2D> queue) {
+        if (cur == null) return queue;
+        if (!cur.rect.intersects(rect)) return queue;
+        if (rect.contains(cur.p)) {
+            queue.enqueue(cur.p);
         }
-        while (!stack.isEmpty()) {
-            Node node = stack.pop();
-            if (rect.contains(node.p)) {
-                queue.enqueue(node.p);
-            }
-            if (node.rt != null && rect.intersects(node.rt.rect)) {
-                stack.push(node.rt);
-            }
-            if (node.lb != null && rect.intersects(node.lb.rect)) {
-                stack.push(node.lb);
-            }
-        }
+        range(cur.lb, rect, queue);
+        range(cur.rt, rect, queue);
         return queue;
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty
     public Point2D nearest(Point2D p) {
         if (p == null) throw new NullPointerException();
-        if (isEmpty()) return null;
-        Point2D near = root.p;
-        return nearest(root, p, near, p.distanceSquaredTo(root.p), new Flag());
+        if (root == null) return null;
+        return nearest(root, p, root.p);
     }
 
-    private Point2D nearest(Node root, Point2D p, Point2D near, double nearest, Flag flag) {
-        double dis = p.distanceSquaredTo(root.p);
-        if (dis < nearest) {
-            near = root.p;
-            nearest = dis;
-            flag.changed = true;
+    /*
+    Nearest neighbor search. To find a closest point to a given query point, start at the root and recursively search in both subtrees using the following pruning rule:
+    if the closest point discovered so far is closer than the distance between the query point and the rectangle corresponding to a node,
+    there is no need to explore that node (or its subtrees).
+    That is, a node is searched only if it might contain a point that is closer than the best one found so far.
+    The effectiveness of the pruning rule depends on quickly finding a nearby point.
+    To do this, organize your recursive method so that when there are two possible subtrees to go down,
+    you always choose the subtree that is on the same side of the splitting line as the query point as
+    the first subtree to explore—the closest point found while exploring the first subtree may enable pruning of the second subtree.
+     */
+    private Point2D nearest(Node cur, Point2D p, Point2D near) {
+        if (cur == null) return near;
+        double neardist = p.distanceSquaredTo(near);
+        double squdist = cur.rect.distanceSquaredTo(p);
+        if (neardist <= squdist) return near;
+        double curdist = p.distanceSquaredTo(cur.p);
+        if (curdist < neardist) {
+            near = cur.p;
         }
-        Flag f = new Flag();
-        if (root.lb == null && root.rt == null) {
-            return near;
-        } else if (root.lb == null) {
-            if (nearest <= root.rt.rect.distanceSquaredTo(p)) {
-                return near;
-            } else {
-
-                Point2D n = nearest(root.rt, p, near, nearest, f);
-                if (f.changed) {
-                    flag.changed = true;
-                    return n;
-                }
-                return near;
-//                return f.changed ? n : near;
-//                return nearest < n.distanceSquaredTo(p) ? near : n;
-            }
-        } else if (root.rt == null) {
-            if (nearest <= root.lb.rect.distanceSquaredTo(p)) {
-                return near;
-            } else {
-                Point2D n = nearest(root.lb, p, near, nearest, f);
-                if (f.changed) {
-                    flag.changed = true;
-                    return n;
-                }
-                return near;
-//                return f.changed ? n : near;
-//                return nearest < n.distanceSquaredTo(p) ? near : n;
-            }
-        } else {
-            if (root.lb.rect.contains(p)) {
-                Point2D ln = nearest(root.lb, p, near, nearest, f);
-                /*double ldis = ln.distanceSquaredTo(p);
-                if (ldis < nearest) {
-                    nearest = ldis;
-                    near = ln;
-                }*/
-                if (f.changed) {
-                    near = ln;
-                    nearest = ln.distanceSquaredTo(p);
-                    flag.changed = true;
-                    if (nearest <= root.rt.rect.distanceSquaredTo(p)) {
-                        return near;
+        if (cur.lb != null && cur.rt != null) {
+            if (cur.lb.rect.contains(p)) {
+                Point2D ln = nearest(cur.lb, p, near);
+                if (!isEqual(ln, near)) {
+                    double lndist = ln.distanceSquaredTo(p);
+                    if (lndist < neardist) {
+                        near = ln;
+                        neardist = lndist;
                     }
                 }
-
-                f.changed = false;
-                Point2D rn = nearest(root.rt, p, near, nearest, f);
-                if (f.changed) {
-                    flag.changed = true;
-                    return rn;
-                }
-                return near;
-//                return f.changed ? rn : near;
-//                return nearest < rn.distanceSquaredTo(p) ? near : rn;
-            } else {
-                Point2D rn = nearest(root.rt, p, near, nearest, f);
-                /*double rdis = rn.distanceSquaredTo(p);
-                if (rdis < nearest) {
-                    nearest = rdis;
-                    near = rn;
-                }*/
-                if (f.changed) {
-                    near = rn;
-                    nearest = rn.distanceSquaredTo(p);
-                    flag.changed = true;
-                    if (nearest <= root.lb.rect.distanceSquaredTo(p)) {
-                        return near;
+                Point2D rn = nearest(cur.rt, p, near);
+                if (!isEqual(rn, near)) {
+                    double rndist = rn.distanceSquaredTo(p);
+                    if (rndist < neardist) {
+                        near = rn;
+                        neardist = rndist;
                     }
                 }
-                f.changed = false;
-                Point2D ln = nearest(root.lb, p, near, nearest, f);
-                if (f.changed) {
-                    flag.changed = true;
-                    return ln;
+                return near;
+            } else {
+                Point2D rn = nearest(cur.rt, p, near);
+                if (!isEqual(rn, near)) {
+                    double rndist = rn.distanceSquaredTo(p);
+                    if (rndist < neardist) {
+                        near = rn;
+                        neardist = rndist;
+                    }
+                }
+                Point2D ln = nearest(cur.lb, p, near);
+                if (!isEqual(ln, near)) {
+                    double lndist = ln.distanceSquaredTo(p);
+                    if (lndist < neardist) {
+                        near = ln;
+                        neardist = lndist;
+                    }
                 }
                 return near;
-//                return f.changed ? ln : near;
-//                return nearest < ln.distanceSquaredTo(p) ? near : ln;
             }
         }
+        Point2D ln = nearest(cur.lb, p, near);
+        if (!isEqual(ln, near)) {
+            double lndist = ln.distanceSquaredTo(p);
+            if (lndist < neardist) {
+                near = ln;
+                neardist = lndist;
+            }
+        }
+        Point2D rn = nearest(cur.rt, p, near);
+        if (!isEqual(rn, near)) {
+            double rndist = rn.distanceSquaredTo(p);
+            if (rndist < neardist) {
+                near = rn;
+                neardist = rndist;
+            }
+        }
+        return near;
     }
 
-    private static class Flag {
-        boolean changed = false;
-    }
+
 
     private static class Node {
         private Point2D p;      // the point
         private RectHV rect;    // the axis-aligned rectangle corresponding to this node
         private Node lb;        // the left/bottom subtree
         private Node rt;        // the right/top subtree
-        private int level;
 
-        public Node(Point2D p, Node lb, Node rt, int level) {
+        public Node(Point2D p, Node lb, Node rt) {
             this.p = p;
             this.lb = lb;
             this.rt = rt;
-            this.level = level;
         }
     }
 
@@ -287,23 +279,15 @@ public class KdTree {
         In in = new In(args[0]);
         KdTree kd = new KdTree();
         while (!in.isEmpty()) {
-            kd.insert(new Point2D(in.readDouble(), in.readDouble()));
+            Point2D p = new Point2D(in.readDouble(), in.readDouble());
+            kd.insert(p);
+            System.out.println(kd.contains(p));
         }
-/*        System.out.println(kd.isEmpty());
-        System.out.println(kd.size());
-        for (int i = 1; i < 10; i++) {
-            System.out.println(kd.contains(new Point2D(0.1 * i, 0.5)));
-        }
-        Iterable<Point2D> it = kd.range(new RectHV(0.0, 0.0, 0.3, 0.5));
+        Iterable<Point2D> it = kd.range(new RectHV(0.0, 0.3, 0.6, 0.6));
         for (Point2D point2D : it) {
             System.out.println(point2D);
-        }*/
+        }
         System.out.println(kd.nearest(new Point2D(0.81, 0.3)));
         kd.draw();
-        /*Point2D p = new Point2D(0.81, 0.3);
-        Point2D p1 = new Point2D(0.975528, 0.345492);
-        Point2D p2 = new Point2D(0.761250, 0.317125);
-        System.out.println(p.distanceSquaredTo(p1));
-        System.out.println(p.distanceSquaredTo(p2));*/
     }
 }
