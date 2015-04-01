@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,7 +11,7 @@ public class WordNet {
 
     private Digraph digraph;
     private ST<Integer,List<String>> idToWord;
-    private ST<String,Integer> wordToId;
+    private ST<String,List<Integer>> wordToId;
 
     private SAP sap;
 
@@ -21,6 +22,8 @@ public class WordNet {
         }
         idToWord = new ST<>();
         wordToId = new ST<>();
+
+
         In in = new In(synsets);
         String line = null;
         String[] seg = null;
@@ -34,11 +37,22 @@ public class WordNet {
             words = seg[1].split(" ");
             id = Integer.parseInt(seg[0]);
             idToWord.put(id, Arrays.asList(words));
+            List<Integer> ids;
             for (String word : words) {
-                wordToId.put(word, id);
+                ids = wordToId.get(word);
+                if (ids == null) {
+                    ids = new ArrayList<>();
+                    ids.add(id);
+                    wordToId.put(word, ids);
+                } else {
+                    ids.add(id);
+                }
             }
         }
+
         digraph = new Digraph(V);
+
+        // hypernyms
         in = new In(hypernyms);
         while (in.hasNextLine()) {
             line = in.readLine();
@@ -83,8 +97,8 @@ public class WordNet {
         if (nounA == null || nounB == null) {
             throw new NullPointerException();
         }
-        Integer a = wordToId.get(nounA);
-        Integer b = wordToId.get(nounB);
+        List<Integer> a = wordToId.get(nounA);
+        List<Integer> b = wordToId.get(nounB);
         if (a == null || b == null) {
             throw new IllegalArgumentException();
         }
@@ -97,8 +111,8 @@ public class WordNet {
         if (nounA == null || nounB == null) {
             throw new NullPointerException();
         }
-        Integer a = wordToId.get(nounA);
-        Integer b = wordToId.get(nounB);
+        List<Integer> a = wordToId.get(nounA);
+        List<Integer> b = wordToId.get(nounB);
         if (a == null || b == null) {
             throw new IllegalArgumentException();
         }
