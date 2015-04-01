@@ -10,8 +10,8 @@ import java.util.List;
 public class WordNet {
 
     private Digraph digraph;
-    private ST<Integer,List<String>> idToWord;
-    private ST<String,List<Integer>> wordToId;
+    private ST<Integer, List<String>> idToWord;
+    private ST<String, List<Integer>> wordToId;
 
     private SAP sap;
 
@@ -28,7 +28,7 @@ public class WordNet {
         String line = null;
         String[] seg = null;
         String[] words = null;
-        Integer id;
+        int id;
         int V = 0;
         while (in.hasNextLine()) {
             V++;
@@ -71,7 +71,7 @@ public class WordNet {
     private boolean isRootedDAG() {
         Iterable<Integer> ids = idToWord.keys();
         int root = 0;
-        for (Integer id : ids) {
+        for (int id : ids) {
             if (digraph.outdegree(id) == 0) {
                 root++;
             }
@@ -116,7 +116,7 @@ public class WordNet {
         if (a == null || b == null) {
             throw new IllegalArgumentException();
         }
-        Integer ancestor = sap.ancestor(a, b);
+        int ancestor = sap.ancestor(a, b);
         return idToWord.get(ancestor).get(0);
     }
 

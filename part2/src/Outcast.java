@@ -28,10 +28,10 @@ public class Outcast {
             }
             if (dist == max) {
                 cnt++;
-                System.out.println(nouns[i]);
+//                System.out.println(nouns[i]);
             }
         }
-        System.out.println(cnt);
+//        System.out.println(cnt);
         return nouns[maxIndex];
     }
 
