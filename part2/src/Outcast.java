@@ -26,12 +26,7 @@ public class Outcast {
                 max = dist;
                 maxIndex = i;
             }
-            if (dist == max) {
-                cnt++;
-//                System.out.println(nouns[i]);
-            }
         }
-//        System.out.println(cnt);
         return nouns[maxIndex];
     }
 

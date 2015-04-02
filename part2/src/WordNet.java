@@ -25,9 +25,9 @@ public class WordNet {
 
 
         In in = new In(synsets);
-        String line = null;
-        String[] seg = null;
-        String[] words = null;
+        String line;
+        String[] seg;
+        String[] words;
         int id;
         int V = 0;
         while (in.hasNextLine()) {
