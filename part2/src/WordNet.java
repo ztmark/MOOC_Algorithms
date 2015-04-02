@@ -117,7 +117,13 @@ public class WordNet {
             throw new IllegalArgumentException();
         }
         int ancestor = sap.ancestor(a, b);
-        return idToWord.get(ancestor).get(0);
+        List<String> ancs = idToWord.get(ancestor);
+        StringBuilder sb = new StringBuilder();
+        for (String anc : ancs) {
+            sb.append(anc).append(" ");
+        }
+        sb = sb.deleteCharAt(sb.lastIndexOf(" "));
+        return sb.toString();
     }
 
     // do unit testing of this class
