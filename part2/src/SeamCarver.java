@@ -7,7 +7,7 @@ import java.awt.Color;
  */
 public class SeamCarver {
 
-    private Color[][] imageColors;
+    private int[][] rgbs;
     private int width;
     private int height;
 
@@ -15,10 +15,10 @@ public class SeamCarver {
     public SeamCarver(Picture picture) {
         width = picture.width();
         height = picture.height();
-        imageColors = new Color[height][width];
+        rgbs = new int[height][width];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                imageColors[i][j] = picture.get(j, i);
+                rgbs[i][j] = picture.get(j, i).getRGB();
             }
         }
     }
@@ -28,7 +28,7 @@ public class SeamCarver {
         Picture picture = new Picture(width, height);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                picture.set(j, i, imageColors[i][j]);
+                picture.set(j, i, new Color(rgbs[i][j]));
             }
         }
         return picture;
@@ -57,34 +57,46 @@ public class SeamCarver {
     }
 
     private double xPart(int x, int y) {
-        double r = Math.abs(imageColors[y][x-1].getRed() - imageColors[y][x+1].getRed());
-        double g = Math.abs(imageColors[y][x-1].getGreen() - imageColors[y][x+1].getGreen());
-        double b = Math.abs(imageColors[y][x-1].getBlue() - imageColors[y][x+1].getBlue());
+        double r = Math.abs(getRed(rgbs[y][x-1]) - getRed(rgbs[y][x + 1]));
+        double g = Math.abs(getGreen(rgbs[y][x-1]) - getGreen(rgbs[y][x + 1]));
+        double b = Math.abs(getBlue(rgbs[y][x - 1]) - getBlue(rgbs[y][x + 1]));
         return r * r + g * g + b * b;
     }
 
     private double yPart(int x, int y) {
-        double r = Math.abs(imageColors[y - 1][x].getRed() - imageColors[y + 1][x].getRed());
-        double g = Math.abs(imageColors[y - 1][x].getGreen() - imageColors[y + 1][x].getGreen());
-        double b = Math.abs(imageColors[y - 1][x].getBlue() - imageColors[y + 1][x].getBlue());
+        double r = Math.abs(getRed(rgbs[y - 1][x]) - getRed(rgbs[y + 1][x]));
+        double g = Math.abs(getGreen(rgbs[y - 1][x]) - getGreen(rgbs[y + 1][x]));
+        double b = Math.abs(getBlue(rgbs[y - 1][x]) - getBlue(rgbs[y + 1][x]));
         return r * r + g * g + b * b;
+    }
+
+    private int getRed(int rgb) {
+        return (rgb >> 16) & 0xFF;
+    }
+
+    private int getGreen(int rgb) {
+        return (rgb >> 8) & 0xFF;
+    }
+
+    private int getBlue(int rgb) {
+        return (rgb >> 0) & 0xFF;
     }
 
     // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
-        Color[][] old = imageColors;
+        int[][] old = rgbs;
         int oldWidth = width;
         int oldHeight = height;
         width = oldHeight;
         height = oldWidth;
-        imageColors = new Color[height][width];
+        rgbs = new int[height][width];
         for (int i = 0; i < oldHeight; i++) {
             for (int j = 0; j < oldWidth; j++) {
-                imageColors[j][i] = old[i][j];
+                rgbs[j][i] = old[i][j];
             }
         }
         int[] ans = findVerticalSeam();
-        imageColors = old;
+        rgbs = old;
         width = oldWidth;
         height = oldHeight;
         return ans;
@@ -156,27 +168,27 @@ public class SeamCarver {
             throw new IllegalArgumentException();
         }
         check(seam);
-        Color[][] old = imageColors;
+        int[][] old = rgbs;
         int oldWidth = width;
         int oldHeight = height;
         width = oldHeight;
         height = oldWidth;
-        imageColors = new Color[height][width];
+        rgbs = new int[height][width];
         for (int i = 0; i < oldHeight; i++) {
             for (int j = 0; j < oldWidth; j++) {
-                imageColors[j][i] = old[i][j];
+                rgbs[j][i] = old[i][j];
             }
         }
         removeVerticalSeam(seam);
         width = oldWidth;
         height = --oldHeight;
-        Color[][] tmp = new Color[height][width];
+        int[][] tmp = new int[height][width];
         for (int i = 0; i < oldWidth; i++) {
             for (int j = 0; j < oldHeight; j++) {
-                tmp[j][i] = imageColors[i][j];
+                tmp[j][i] = rgbs[i][j];
             }
         }
-        imageColors = tmp;
+        rgbs = tmp;
     }
 
     // remove vertical seam from current picture
@@ -188,12 +200,12 @@ public class SeamCarver {
             throw new IllegalArgumentException();
         }
         check(seam);
-        Color[][] colors = new Color[height][width-1];
+        int[][] colors = new int[height][width-1];
         for (int i = 0; i < seam.length; i++) {
-            System.arraycopy(imageColors[i], 0, colors[i], 0, seam[i]);
-            System.arraycopy(imageColors[i], seam[i]+1, colors[i], seam[i], width-seam[i]-1);
+            System.arraycopy(rgbs[i], 0, colors[i], 0, seam[i]);
+            System.arraycopy(rgbs[i], seam[i]+1, colors[i], seam[i], width-seam[i]-1);
         }
-        imageColors = colors;
+        rgbs = colors;
         --width;
     }
 
