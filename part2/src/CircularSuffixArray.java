@@ -30,7 +30,7 @@ public class CircularSuffixArray {
         int i = s + 1;
         while (low <= high) {
             int cmp = compare(index[i], index[s]);
-            if (cmp < 0) {
+            if (cmp <= 0) {
                 low++;
                 i++;
             } else {
