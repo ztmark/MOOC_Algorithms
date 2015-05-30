@@ -12,17 +12,23 @@ public class MoveToFront {
             acs[i] = i;
         }
         while (!BinaryStdIn.isEmpty()) {
-            int b = BinaryStdIn.readByte() & 0xff;
+            int b =  (BinaryStdIn.readByte() & 0xff);
             int c = acs[0];
-            for (int i = 1; i < acs.length; i++) {
+            int i = 0;
+            for (i = 1; i < acs.length; i++) {
                 if (c != b) {
-                    c = acs[i];
+                    int tmp = acs[i];
                     acs[i] = c;
+                    c = tmp;
                 } else {
-                    BinaryStdOut.write((i - 1), 8);
+                    BinaryStdOut.write(i - 1, 8);
                     acs[0] = c;
                     break;
                 }
+            }
+            if (i == acs.length) {
+                BinaryStdOut.write(i - 1, 8);
+                acs[0] = c;
             }
             BinaryStdOut.flush();
         }
@@ -35,14 +41,12 @@ public class MoveToFront {
         for (int i = 0; i < acs.length; i++) {
             acs[i] = i;
         }
-        while (!BinaryStdIn.isEmpty()) {
-            int b = BinaryStdIn.readByte() & 0xff;
+        char[] str = BinaryStdIn.readString().toCharArray();
+        for (char b : str) {
             int c = acs[b];
             BinaryStdOut.write(c, 8);
             BinaryStdOut.flush();
-            for (int i = b; i > 0; i--) {
-                acs[i] = acs[i - 1];
-            }
+            System.arraycopy(acs, 0, acs, 1, b);
             acs[0] = c;
         }
         BinaryStdOut.close();
@@ -51,7 +55,8 @@ public class MoveToFront {
     // if args[0] is '-', apply move-to-front encoding
     // if args[0] is '+', apply move-to-front decoding
     public static void main(String[] args) {
-        encode();
-//        decode();
+        if      (args[0].equals("-")) encode();
+        else if (args[0].equals("+")) decode();
+        else throw new IllegalArgumentException("Illegal command line argument");
     }
 }
