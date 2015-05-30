@@ -25,6 +25,12 @@ public class CircularSuffixArray {
 
         if (s >= e) return;
 
+        if (e - s < 10) {
+            insertionSort(s, e);
+        }
+
+        selectPivot(s, e);
+
         int low = s + 1, high = e;
 
         int i = s + 1;
@@ -44,6 +50,35 @@ public class CircularSuffixArray {
         sort(s, high - 1);
         sort(high + 1, e);
 
+    }
+
+    private void insertionSort(int s, int e) {
+        for (int i = s + 1; i <= e; i++) {
+            int id = index[i];
+            char c = getChar(index[i]);
+            int j = i - 1;
+            for (; j >= 0; j--) {
+                if (getChar(index[j]) > c) {
+                    index[j + 1] = index[j];
+                } else {
+                    break;
+                }
+            }
+            index[j + 1] = id;
+        }
+    }
+
+    private void selectPivot(int s, int e) {
+        int m = s + (e - s) / 2;
+        if (getChar(s) > getChar(m)) {
+            swap(s, m);
+        }
+        if (getChar(m) > getChar(e)) {
+            swap(m, e);
+        }
+        if (getChar(m) > getChar(s)) {
+            swap(s, m);
+        }
     }
 
     private int compare(int i, int j) {
