@@ -2,6 +2,9 @@
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
 
+.gradle
+build
+
 *.iml
 
 ## Directory-based project format:
