@@ -1,31 +1,33 @@
 package com.github.ztmark.undirectgraph;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Queue;
 
-public class DepthFirstPaths {
-
-    private final int s;
+public class BreadthFirstPaths {
     private final boolean[] marked;
     private final int[] edgeTo;
+    private final int s;
 
-    public DepthFirstPaths(Graph graph, int s) {
+    public BreadthFirstPaths(Graph graph, int s) {
         marked = new boolean[graph.V()];
         edgeTo = new int[graph.V()];
         this.s = s;
-        dfs(graph, s);
     }
 
-    private void dfs(Graph graph, int v) {
-        if (marked[v]) {
-            return;
-        }
-
-        marked[v] = true;
-        for (Integer w : graph.adj(v)) {
-            if (!marked[w]) {
-                edgeTo[w] = v;
-                dfs(graph, w);
+    private void bfs(Graph graph, int s) {
+        Queue<Integer> queue = new ArrayDeque<>();
+        marked[s] = true;
+        queue.offer(s);
+        while (!queue.isEmpty()) {
+            Integer v = queue.poll();
+            for (Integer w : graph.adj(v)) {
+                if (!marked[w]) {
+                    marked[w] = true;
+                    queue.offer(w);
+                    edgeTo[w] = v;
+                }
             }
         }
     }
@@ -47,5 +49,4 @@ public class DepthFirstPaths {
         stack.push(s);
         return stack;
     }
-
 }
