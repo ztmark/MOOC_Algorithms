@@ -6,8 +6,8 @@ scc Strong connected components
  */
 public class KasarajuSCC {
 
-    private boolean[] marked;
-    private int[] id;
+    private final boolean[] marked;
+    private final int[] id;
     private int count;
 
     public KasarajuSCC(DiGraph graph) {
