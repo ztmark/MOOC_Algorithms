@@ -14,16 +14,20 @@ public class Topological {
         }
     }
 
+    public boolean hasOrder() {
+        return order != null;
+    }
+
     public Iterable<Integer> order() {
         return order;
     }
 
 
     private static class DepthFirstOrder {
-        private boolean[] marked;
-        private Queue<Integer> pre;
-        private Queue<Integer> post;
-        private Stack<Integer> reversePost;
+        private final boolean[] marked;
+        private final Queue<Integer> pre;
+        private final Queue<Integer> post;
+        private final Stack<Integer> reversePost;
 
         public DepthFirstOrder(EdgeWeightedDigraph digraph) {
             marked = new boolean[digraph.V()];
