@@ -50,4 +50,8 @@ public class AcyclicLP {
         }
         return path;
     }
+
+    public double distTo(int w) {
+        return distTo[w];
+    }
 }
