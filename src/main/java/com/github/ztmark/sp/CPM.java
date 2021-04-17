@@ -3,7 +3,7 @@ package com.github.ztmark.sp;
 import java.util.List;
 
 // 关键路径
-// 解决 任务和任务直接有前后关系的限制，同时可以有无限多任务同时进行的情况下
+// 解决 任务和任务之间有前后关系的限制，同时可以有无限多任务同时进行的情况下
 // 如何安排任务，使所有任务能在最短时间内完成
 // 这类问题可以转换成求最长路径问题
 public class CPM {
@@ -11,7 +11,7 @@ public class CPM {
 
     public CPM(Task[] tasks) {
         int taskNum = tasks.length;
-        // 每个 task 是一条表，涉及到两个顶点，然后有一个开始顶点和一个结束顶点
+        // 每个 task 是一条边，涉及到两个顶点，然后有一个开始顶点和一个结束顶点
         // 任务和任务之的关系由一条权重为0的有向边来表示
 
         int s = 2 * taskNum; // 开始顶点
