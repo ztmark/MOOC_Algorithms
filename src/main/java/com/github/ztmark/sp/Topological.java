@@ -1,7 +1,6 @@
 package com.github.ztmark.sp;
 
-import com.github.ztmark.basic.Queue;
-import com.github.ztmark.basic.Stack;
+import java.util.*;
 
 public class Topological {
     private Iterable<Integer> order;
@@ -27,13 +26,11 @@ public class Topological {
         private final boolean[] marked;
         private final Queue<Integer> pre;
         private final Queue<Integer> post;
-        private final Stack<Integer> reversePost;
 
         public DepthFirstOrder(EdgeWeightedDigraph digraph) {
             marked = new boolean[digraph.V()];
-            pre = new Queue<>();
-            post = new Queue<>();
-            reversePost = new Stack<>();
+            pre = new ArrayDeque<>();
+            post = new ArrayDeque<>();
             for (int i = 0; i < digraph.V(); i++) {
                 if (!marked[i]) {
                     dfs(digraph, i);
@@ -43,15 +40,14 @@ public class Topological {
 
         private void dfs(EdgeWeightedDigraph digraph, int v) {
             marked[v] = true;
-            pre.enqueue(v);
+            pre.offer(v);
             for (DirectedEdge edge : digraph.adj(v)) {
                 int to = edge.to();
                 if (!marked[to]) {
                     dfs(digraph, to);
                 }
             }
-            post.enqueue(v);
-            reversePost.push(v);
+            post.offer(v);
         }
 
         public Iterable<Integer> pre() {
@@ -63,7 +59,9 @@ public class Topological {
         }
 
         public Iterable<Integer> reversePost() {
-            return reversePost;
+            List<Integer> reverse = new ArrayList<>(post);
+            Collections.reverse(reverse);
+            return reverse;
         }
     }
 }

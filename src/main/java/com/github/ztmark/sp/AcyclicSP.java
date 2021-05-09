@@ -5,6 +5,9 @@ import com.github.ztmark.basic.Stack;
 
 import java.util.Arrays;
 
+/*
+解决无环有向图的最短路，可以有负权重的边
+ */
 public class AcyclicSP {
     private final DirectedEdge[] edgeTo;
     private final Double[] distTo;
